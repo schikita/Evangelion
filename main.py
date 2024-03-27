@@ -7,6 +7,8 @@ from boss import Boss
 from boss_2 import BossTwo
 from boss_3 import BossThree
 from fireball import Fireball
+import random
+from meteo import Meteo
 
 # Инициализация Pygame
 pygame.init()
@@ -55,6 +57,10 @@ def intro():
 all_sprites.add(player)
 
 fireballs = pygame.sprite.Group()
+
+meteo_image = pygame.image.load('meteo.png').convert_alpha()
+meteos = pygame.sprite.Group()
+
 
 # Загрузка спрайтового листа босса
 boss_image_sheet = pygame.image.load('Boss-1.png').convert_alpha()
@@ -299,6 +305,12 @@ def main(font):
                 screen.blit(boss_two_health_text, (10, 60))
 
             if current_screen == 'Level 3' and boss_three and boss_three.alive():
+                meteos.update()  # Обновляем метеориты
+                if random.randint(1, 800) == 1:  # С некоторым шансом добавляем метеорит
+                    new_meteo = Meteo(meteo_image, screen_width, screen_height)
+                    meteos.add(new_meteo)
+                    all_sprites.add(new_meteo)
+
                 hits = pygame.sprite.spritecollide(boss_three, spears, True)
                 for hit in hits:
                     boss_three.hit()
@@ -327,6 +339,24 @@ def main(font):
             hits = pygame.sprite.spritecollide(player, fireballs, True)
             for hit in hits:
                 player.take_damage()
+                if player.health <= 0:
+                    # Если жизни игрока закончились, показываем сообщение "You lose"
+                    screen.fill((0, 0, 0))  # Очищаем экран
+                    font = pygame.font.Font(None, 74)
+                    lose_text = font.render('You Lost', True, (255, 0, 0))
+                    text_rect = lose_text.get_rect(center=(screen_width / 2, screen_height / 2))
+                    screen.blit(lose_text, text_rect)
+                    pygame.display.flip()
+                    pygame.time.wait(2000)  # Даем время увидеть сообщение
+                    current_screen = "menu"
+                    in_game = False
+                    break  # Выход из цикла, чтобы не обрабатывать другие столкновения после смерти
+
+            # Проверяем столкновения метеоритов с игроком
+            hits = pygame.sprite.spritecollide(player, meteos, True)
+            for hit in hits:
+                player.take_damage()
+                # Проверяем, остались ли у игрока жизни после попадания
                 if player.health <= 0:
                     # Если жизни игрока закончились, показываем сообщение "You lose"
                     screen.fill((0, 0, 0))  # Очищаем экран
