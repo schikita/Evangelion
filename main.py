@@ -1,3 +1,4 @@
+# Импорт классов из других файлов, представляющих различные элементы игры (игрока, боссов, копья, метеориты и др.)
 import pygame
 import sys
 from video import Video
@@ -32,7 +33,7 @@ intro_video = Video(intro_video_path)
 intro_video.set_size((1000, 800))
 
 
-def intro():
+def intro():                    # Функция для воспроизведения видео-интро
     pygame.mixer.music.stop()  # Останавливаем музыку перед началом интро
     intro_video.set_volume(1)
     intro_video.restart()  # Перезапуск видео с начала
@@ -401,6 +402,6 @@ def main(font):
 
 
 if __name__ == "__main__":
-    pygame.font.init()
-    font = pygame.font.Font(None, 36)
-    main(font)
+    pygame.font.init()                      # Инициализация модуля шрифтов Pygame
+    font = pygame.font.Font(None, 36)       # Создание шрифта
+    main(font)                              # Запуск главной функции игры
